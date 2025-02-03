@@ -1,11 +1,12 @@
 ---
-title: "Station History:"
-subtitle: "Yolo Bypass near Lisbon Weir (LIS)"
-date: "Updated On: `r Sys.Date()` | Origin on: 2020-12-10"
-author: "By: Amanda Maguire Updated By: Logan Davis"
-output: html_document
-bibliography: references.bib
-nocite: '@*'
+title: "Yolo Bypass near Lisbon Weir (LIS) Station History  \nEstablished on 3/04/2013"
+author: "Amanda Maguire  \nDepartment of Water Resources  \namanda.maguire@water.ca.gov"
+date: "Updated: 28 January 2024"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
 ---
 
 ```{r setup, include=FALSE}
@@ -18,6 +19,9 @@ library(lubridate)
 library(dataRetrieval)
 library(scales)
 library(dplyr)
+library(scales)
+library(gt)
+library(plotly)
 ```
 
 ``` {r include = FALSE}
@@ -53,7 +57,7 @@ names(df_raw_L) <- c(
   "Dissolved Oxygen (mg/L)", "DO_q",
   "pH units", "pH_q",
   "Chlorophyll Fluorescence (µg/L)", "Chla_q",
-  "Depth (ft)", "Depth_q",
+  "Depth (m)", "Depth_q",
   "fDOM (QSU)", "fDOM_q")
 
 df_clean_L <- df_raw_L %>% 
@@ -222,46 +226,244 @@ min_data <- df_dis_min %>% group_by(StationCode,Analyte,min_Result) %>% summariz
 dis_sum_table_all <- full_join(full_join(min_data,max_data), df_dis_sum_table)
 ```
 
-# **PURPOSE**  
+# Station Rationale
 
 Department of Water Resources (DWR) North Central Region Office (NCRO) Water Quality Evaluation Section (WQES) maintains monitoring equipment for continuous water quality using a Yellow Springs Instruments (YSI) multiparameter sonde and collects discrete water samples at this site for the Yolo Bypass Monitoring Program to support the Yolo Bypass Fish and Invertebrate Monitoring Program and the North Delta Food Subsidies (NDFS) study. Yolo Bypass near Lisbon Weir (LIS) is part of the monitoring network for NDFS, an adaptive management project that monitors the effects of the North Delta Flow Action (NDFA). The NDFA is a joint effort between DWR, Glenn-Colusa Irrigation District, Reclamation Districts 108 and 2035, and local landowners to increase and redirect summer and/or fall outflows from the Colusa Basin Drain into the Yolo Bypass perennial Toe Drain. Summer-fall flow pulses from the NDFA are managed with the goal of distributing food resources downstream to enhance the quality and quantity of food for Delta Smelt and other species in the downstream regions of the Cache Slough Complex and lower Sacramento River. This management action was initiated after monitoring studies in 2011 and 2012 observed fall phytoplankton blooms in the lower Sacramento River after higher-than-normal fall agricultural return flows passed through the Yolo Bypass (FLaSH; Brown et al. 2014; Frantzich et al. 2018). Due to the potential benefits of summer-fall flow pulses through Yolo Bypass to the Delta food web, the Delta Smelt Resiliency Strategy included managed flow pulses as a core strategy to benefit Delta Smelt (CNRA 2016). In 2019, the NDFA was included as one of several adaptive management strategies of the Delta Smelt Summer-Fall Habitat Action, a new regulatory requirement in both the 2019 Fish and Wildlife Service Biological Opinion and 2020 Department of Fish and Wildlife Incidental Take Permit for the operation of the State Water Project and Central Valley Project. LIS is the only long-term monitoring station in the network of NDFS water quality stations to monitor trends and water quality effects in the Yolo Bypass due to seasonal flow pulses.  
 
-
-# **PRIMARY HABITAT TYPE/PHYSICAL REGION**  
+# Primary Habitat Type 
 
 The habitat type is riparian channel and floodplain drainage.  
 
-# **TABLE 1. STATION LOCATION (WGS84)**
-
-```{r Table 1, echo=FALSE}
-#echo = FALSE parameter prevent printing of the R code and still generated the table
-table1 <- data.frame("YOLO BYPASS NEAR LISBON WEIR", 38.474608, -121.5885961, "15 FEET", "LEFT SIDE OF CHANNEL")
-colnames(table1) <- c("STATION", "LATITUDE", "LONGITUDE", "ELEVATION", "CHANNEL LOCATION")
-knitr::kable(table1)
-```
-![LIS Station Map](StationMap.png))
+# Physical Region and Bathymetry
 
 LIS is 7 miles south of West Sacramento in the Toe Drain of the Yolo Bypass. The Toe Drain parallels the eastern edge of the Yolo Bypass floodplain and operates as a drain for water travelling from the Bypass to the Delta. The Sacramento Deepwater Ship Channel is across the east levee from the Toe Drain.
+```{r import coordinate data, message=FALSE, warning=FALSE, echo = FALSE}
+# Table 1. Station Location
+table1 <- read_csv(
+   file = "LIS_table1.csv",  #######File name----
+   col_names = TRUE) 
+gt(table1) %>%
+  tab_header(title = md("Table 1. Station Location - (WGS84)")) %>%
+  opt_stylize(style = 5, 
+              add_row_striping = TRUE) %>%
+  cols_align(align = "center",
+             columns = 2:5) %>%
+  tab_options(heading.align = "left")
+```
+<br>
 
 ![LIS Station Photo](StationPhoto.png))
 
-The LIS YSI sonde is at a fixed depth inside a 6-inch PVC pipe which is attached to a stationary dock on eastern bank. The LIS station is about 200 meters downstream of the Lisbon Weir and is tidally influenced. The Lisbon Weir acts as a tidal barrier, allowing water to pass upstream during flood tides with a series of one-way flap-gates on the west side. Additionally, water overtops the entire length of the rock weir (at peak high tide) and traps the water on an ebb tide upstream of the barrier for agricultural users. The weir was designed to slow the movement of water allowing a pool of water to form upstream of the weir and maintain higher water level during low tide for agricultural pumpin and irrigation for seasonal floodplain crops.
+The LIS YSI sonde is at a fixed depth inside a 6-inch PVC pipe which is attached to a stationary dock on eastern bank. The LIS station is about 200 meters downstream of the Lisbon Weir and is tidally influenced. The Lisbon Weir acts as a tidal barrier, allowing water to pass upstream during flood tides with a series of one-way flap-gates on the west side. Additionally, water overtops the entire length of the rock weir (at peak high tide) and traps the water on an ebb tide upstream of the barrier for agricultural users. The weir was designed to slow the movement of water allowing a pool of water to form upstream of the weir and maintain higher water level during low tide for agricultural pumping and irrigation for seasonal floodplain crops.
 
-![LIS Station Location Photo](StationLocation.png))
 
 Bathymetry data taken near LIS in November 2019 display variable channel depth with higher elevations (shallower waters) closer to the Lisbon Weir and lower elevations (deeper water) closer to the LIS station. The location of LIS is generally in an area of changing water depth due to bathymetry changes and may be reflected in water quality readings as well as tidal flux. Comparatively, the channel’s banks are generally shallower with increasing depth towards center channel.
 
 ![LIS Cahnnel Elevation Photo](ChannelElevation.png))
 
-# **Table 2. STATION EQUIPMENT**
-```{r Table 2, echo=FALSE}
-#echo = FALSE parameter prevent printing of the R code and still generated the table
-table2 <- data.frame(Equipment=c("YSI 6600 MULTIPARAMETER SONDE", "YSI EXO2 MULTIPARAMETER SONDE"), "START DATE"=c("03/04/2013", "06/25/2019"),"END DATE"=c("06/25/2019", "---"))
+# Station Equipment
 
-knitr::kable(table2)
+NCRO WQES uses a Yellow Springs Instruments (YSI) multiparameter sonde for the continuous data collection. The NCRO Flow and Special Studies Section monitors continuous flow and maintains the telemetry equipment for DWR’s reporting to the California Data Exchange Center (CDEC). Discrete water quality samples are collected at a 1-meter depth using a Van Dorn water sampler.
+```{r import equipment data, message=FALSE, warning=FALSE, echo = FALSE}
+# Table 2. Station Equipment
+table2 <- read_csv(
+   file = "LIS_table2.csv",  #######File name----
+   col_names = TRUE) 
+gt(table2) %>%
+  tab_header(title = md("Table 2. Station Equipment")) %>%
+  opt_stylize(style = 5, 
+              add_row_striping = TRUE) %>%
+  cols_align(align = "center",
+             columns = 2:3) %>%
+  cols_width(2:3 ~ px(150)) %>%
+  tab_options(heading.align = "left")
+```
+<br>
+The LIS YSI sonde is at a fixed depth inside a 6-inch PVC pipe which is attached to a stationary dock on eastern bank. The LIS station is about 200 meters downstream of the Lisbon Weir and is tidally influenced. The Lisbon Weir acts as a tidal barrier, allowing water to pass upstream during flood tides with a series of one-way flap-gates on the west side. Additionally, water overtops the entire length of the rock weir (at peak high tide) and traps the water on an ebb tide upstream of the barrier for agricultural users. The weir was designed to slow the movement of water allowing a pool of water to form upstream of the weir and maintain higher water level during low tide for agricultural pumping and irrigation for seasonal floodplain crops.
+<br>
+
+![LIS Station Location Photo](StationLocation.png)
+
+# Constituents and Period of Record {.tabset}
+## Continuous Record 
+All reviewed and quality controlled continuous water quality data is available for downloading for Yolo Bypass near Lisbon Weir (LIS) on Water Data Library [(WDL)] (https://wdl.water.ca.gov/waterdatalibrary/) by searching under ‘Continuous Data’ using Station Number B9156000. 
+
+```{r import missing continuous data, message=FALSE, warning=FALSE, echo = FALSE}
+# Table 3. SAMPLING HISTORY AT GLE FOR CONTINUOUS CONSTITUENTS INCLUDING PERIODS OF MISSING DATA (2013-2022).
+table3 <- read_csv(
+   file = "LIS_table3.csv",  #######File name----
+   col_names = TRUE) 
+table3 %>% gt() %>%
+  tab_header(title = md("Table 3. Continuous Sampling History (2013-2022) with Consecutive Periods of Missing Data (6+ months)")) %>%
+  opt_stylize(style = 5, 
+              add_row_striping = TRUE) %>%
+  cols_align(align = "center",
+             columns = 2:4) %>%
+  tab_options(heading.align = "left")
 ```
 
-# **CONSTITUENTS AND PERIODS OF RECORD**
+## Discrete Record
+All reviewed and quality controlled discrete grab sample water quality data is available on WDL at <https://wdl.water.ca.gov>. Search WDL under ‘Water Quality’ using Station Name **Yolo Bypass Toe Drain Below Lisbon Weir** or Station Number B9D82851352.
+
+
+## Summary Table
+
+
+```{r summarize continuous data in table form, echo=FALSE, message=FALSE, warning=FALSE}
+# continuous table
+daily_summary <- df_clean_L %>% 
+  group_by(Parameter,Date) %>% 
+  summarize(Daily_avg=mean(Value, na.rm = TRUE),
+            Daily_max=max(Value, na.rm = TRUE),
+            Daily_min=min(Value, na.rm = TRUE),
+            Daily_range=sum(Daily_max-Daily_min, na.rm = TRUE))
+
+sum_tbl <- daily_summary %>% drop_na() %>% 
+  group_by(Parameter) %>% 
+  summarize(n = sum(!is.na(Daily_avg)),
+            Mean=mean(Daily_avg, na.rm=TRUE),
+            Max=max(Daily_avg, na.rm = TRUE),
+            Min=min(Daily_avg, na.rm = TRUE),
+            StdDev= sd(Daily_avg, na.rm=TRUE),
+            MAD=mad(Daily_avg, na.rm = TRUE),
+            AvgRng=mean(Daily_range, na.rm = TRUE))
+
+df_date <- daily_summary %>% drop_na() %>% select(1:3)
+date_max <- df_date %>% slice_max(Daily_avg) %>% rename("max_date" = Date,
+                                                        "Max" = Daily_avg)
+date_min <- df_date %>% slice_min(Daily_avg) %>% rename("min_date" = Date,
+                                                        "Min" = Daily_avg)
+df_table <- full_join(full_join(sum_tbl,date_max),date_min) %>% 
+  relocate(max_date, .after = Max) %>% 
+  relocate(min_date, .after = Min) %>%
+  #UPDATE STATION CODE IDENTIFICATION------------
+  mutate(StationCode = "LIS") %>% 
+  relocate(StationCode)
+
+dates <- sum_tbl %>% 
+  pivot_longer(2:8, names_to = "Statistic", values_to = "para") %>% 
+  pivot_wider(names_from = Parameter, values_from = para)
+
+sum_tbl <- sum_tbl %>% rename("SD" = StdDev, "Avg Rng" = AvgRng)
+
+gt(sum_tbl) %>%
+  fmt_number(columns = (3:8),
+             rows = c(1,3,4,8),
+             decimals = 2) %>%
+  fmt_number(columns = (3:8),
+             rows = c(2,6,7),
+             decimals = 1) %>%
+  fmt_number(columns = (3:8),
+             rows = c(5),
+             decimals = 0) %>%
+  #cols_align(align = "center",
+  #           columns = 2:8) %>%
+  cols_width(Parameter ~ px(275),
+             2:8 ~ px(75)) %>%
+  opt_stylize(style = 5, 
+              add_row_striping = TRUE) %>%
+  tab_options(heading.align = "left") %>%
+  tab_spanner(columns = 2:8, 
+              label = 'LIS (2013-2024)', 
+              id = 'spannerA')
+```
+
+### Chlorophyll Fluorescence (µg/L)
+```{r Chla (µg/L), message=FALSE, warning=FALSE, echo =FALSE}
+WY_plots_L$`Chlorophyll Fluorescence (µg/L)`
+         #tooltip = c("text"))
+```
+
+
+### Depth (m)
+```{r Depth (m), message=FALSE, warning=FALSE, echo =FALSE}
+#ggplotly(WY_plots$`Depth (m)`,
+ #        tooltip = c("text"))
+WY_plots_L$`Depth (m)`
+```
+
+### Dissolved Oxygen (mg/L)
+```{r DO, message=FALSE, warning=FALSE, echo=FALSE}
+#ggplotly(WY_plots$`Dissolved Oxygen (mg/L)`,
+ #        tooltip = c("text"))
+WY_plots_L$`Dissolved Oxygen (mg/L)`
+```
+
+### pH
+```{r pH, message=FALSE, warning=FALSE, echo=FALSE}
+#ggplotly(WY_plots$`pH units`,
+ #        tooltip = c("text"))
+WY_plots_L$`pH units`
+```
+
+### Specific Conductance (µS/cm)
+```{r Spcnd, message=FALSE, warning=FALSE, echo=FALSE}
+#ggplotly(WY_plots$`Specific Conductance (µS/cm)`,
+ #        tooltip = c("text"))
+WY_plots_L$`Specific Conductance (µS/cm)`
+```
+
+### Turbidity (FNU)
+```{r turbidity, message=FALSE, warning=FALSE, echo=FALSE}
+#ggplotly(WY_plots$`Turbidity (FNU)`,
+ #        tooltip = c("text"))
+WY_plots_L$`Turbidity (FNU)`
+```
+
+### Water Temperature (°C)
+```{r Water Temperature, message=FALSE, warning=FALSE, echo=FALSE}
+#ggplotly(WY_plots$`Water Temperature (°C)`,
+ #        tooltip = c("text"))
+WY_plots_L$`Water Temperature (°C)`
+```
+
+### fDOM (QSU)
+
+```{r fDOM, message=FALSE, warning=FALSE, echo=FALSE}
+WY_plots_L$`fDOM (QSU)`
+```
+
+## Histogram
+
+```{r visualize histograms, message=FALSE, warning=FALSE, echo=FALSE, fig.width = 8, fig.height = 8}
+## Daily average water data calculated from 15-min data
+histo_plot2<- df_clean_L %>% group_by(Parameter,Date) %>% summarize(Mean=mean(Value, na.rm=TRUE)) %>% 
+  ggplot(., aes(x = Mean, y=after_stat(density))) + 
+  facet_wrap(~Parameter, scales = 'free') +
+  geom_histogram(binwidth = function(x) 2 * IQR(x) / (length(x)^(1/3))) +
+  geom_density(color="green",linewidth=4) +
+  theme_bw() +
+  labs(x = "Daily Average",
+       y = "Density",
+       title = "Distribution by Parameter (2013-2022)")
+histo_plot2
+
+```
+
+# Summary of Discrete Water Quality {.tabset}
+## Timeseries Plots
+```{r Table 5, echo=FALSE}
+#echo = FALSE parameter prevent printing of the R code and still generated the table
+table5 <- dis_sum_table_all
+knitr::kable(table5)
+```
+
+# References {.tabset}
+
+Brown, L.R., Baxter, R., Castillo, G., Conrad, L., Culberson, S., Erickson, G., Feyrer, F., Fong, S., Gehrts, K.,     Grimaldo, L., Herbold, B., Kirsch, J., Mueller-Solger, A., Slater, S., Souza, K., and Van  Nieuwenhuyse, E., 2014, Synthesis of studies in the fall low-salinity zone of the San Francisco Estuary, September–December 2011: U.S. Geological Survey Scientific Investigations Report 2014–5041, 136 p., http://dx.doi.org/10.3133/sir20145041. 
+
+California Natural Resources Agency. 2016. Delta Smelt Resiliency Strategy.
+
+Frantzich, J., Sommer, T. and Schreier, B., 2018. Physical and biological responses to flow in a tidal freshwater slough complex.*San Francisco Estuary and Watershed Science*, 16(1).
+
+Maguire, A., Frantzich, J., Davis, B., Bedwell, M., and C. Stuart. 2019. North Delta Flow Action Continuous Water Quality Monitoring Report 2019. Prepared by the State of California Department of Water Resources, Division of Regional Assistance, North Central Region Office & Division of Environmental Sciences, Office of Water Quality and Estuarine Ecology.
+
+Twardochleb L., Maguire A., Dixit L., Bedwell M., Orlando J., MacWilliams M., Bever A., and B. Davis. 2021. North Delta Food Subsidies Study: Monitoring Food Web Responses to the North Delta Flow Action, 2019 Report. Department of Water Resources, Division of Environmental Services.
+
+
+#### Note
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
 All reviewed and quality controlled continuous water quality data is available for downloading for Yolo Bypass near Lisbon Weir (LIS) on Water Data Library [(WDL)] (https://wdl.water.ca.gov/waterdatalibrary/) by searching under ‘Continuous Data’ using Station Number B9156000. All reviewed and quality controlled discrete grab sample water quality data is available on WDL by searching in ‘Water Quality’ under ‘Station & County’ using Station Name “Yolo Bypass Toe Drain Below Lisbon Weir” or Station Number B9D82851352.
 
 # **Table 5 SUMMARY STATISTICS FOR ALL DEISCRETE WATER QUALITY SAMPLES COLLECTED FOR LAB ANALYSIS AT LIS**
